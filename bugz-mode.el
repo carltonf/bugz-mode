@@ -701,7 +701,8 @@ from the server."
     (unless only-fetch 
       (if other-window
           (find-file-other-window bug-file-name)
-        (find-file bug-file-name)))))
+        (find-file bug-file-name))
+      (bugz-mode))))
 
 (defun* bugz-open-attachment (attachment-id
                               &rest args
