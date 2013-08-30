@@ -105,15 +105,14 @@
 ;; bugz-db-dir then M-xbugz will barf at you and fail.  In that case
 ;; create the directory and try again.
 ;;
-;; Done? Good, run M-xbugz again and you will find yourself in the
+;; Done?  Good, run M-xbugz again and you will find yourself in the
 ;; so-called bugz summary buffer.  This is the buffer where you do
-;; searches and manage the resulting sets of record.  By default the
-;; summary buffer shows you the set of records which have been already
+;; searches and manage the resulting sets of bugs.  By default the
+;; summary buffer shows you the set of bugs which have been already
 ;; fetched from the bugzilla server and put in the local database in
 ;; bugz-db-dir.  This fact is reflected by the [local] mark in the
 ;; buffer.  Of course since this is the first time you run M-xbugz you
-;; did not download any bug yet, so the list is now empty.  How boring
-;; :(
+;; did not download any bug yet, so the list is empty.  How boring :(
 ;;
 ;; So, where are your bugs?  Well, hopefully they are at the bugzilla
 ;; server whose url you configured in bugz-db-base.  We have to fetch
