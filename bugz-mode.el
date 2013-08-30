@@ -1082,7 +1082,15 @@ Summary buffer with the result."
                                                               (concat "Add to search criteria [" args "]"))) ?E))
                 letter)
       (let* ((keyword (cadr (assoc letter keywords)))
-             (value (read-from-minibuffer (concat (substring keyword 1) ": "))))
+             (value (let ((prompt (concat (substring keyword 1) ": ")))
+                      (cond
+                       ((equal keyword ":severity")
+                        (completing-read prompt bugz-severity-levels nil t))
+                       ((equal keyword ":priority")
+                        (completing-read prompt bugz-priority-levels nil t))
+                       ((equal keyword ":ordered-by")
+                        (completing-read prompt bugz-orderint-criterias nil t))
+                       (t (read-from-minibuffer prompt))))))
         (setq args (concat args keyword " \"" value "\" "))))
     (if (and letter args)
         (progn
