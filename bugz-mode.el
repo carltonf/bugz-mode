@@ -251,7 +251,7 @@
 ;; them in order to fetch all their direct dependencies, attachments
 ;; and what not.
 ;;
-;; Updating bugs
+;; Changing bugs
 ;; -------------
 ;;
 ;; You can add a comment to a bug by visiting its buffer and then
