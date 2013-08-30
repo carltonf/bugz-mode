@@ -702,7 +702,7 @@ from the server."
       (if other-window
           (find-file-other-window bug-file-name)
         (find-file bug-file-name))
-      (bugz-mode))))
+      (when (not (eql major-mode 'bugz-mode)) (bugz-mode)))))
 
 (defun* bugz-open-attachment (attachment-id
                               &rest args
