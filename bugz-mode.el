@@ -308,13 +308,15 @@
   :type 'string
   :group 'bugz-mode)
 
-(defcustom bugz-db-base "https://bugs.gentoo.org"
-  "URL of the bugzilla installation."
+(defcustom bugz-db-base nil
+  "URL of the bugzilla installation. Set this to nil if you are
+using bugz's own configuration scheme."
   :type 'string
   :group 'bugz-mode)
 
-(defcustom bugz-db-user user-mail-address
-  "User name to use in bugzilla."
+(defcustom bugz-db-user nil
+  "User name to use in bugzilla. Set this to nil if bugz's own
+configuration scheme is used."
   :type 'string
   :group 'bugz-mode)
 
@@ -501,14 +503,17 @@ This function returns a list of bug lists of the form:
       (setq args (cons "-k" (cons keywords args))))
     ;; Prepare the bugz general arguments and command.
     (setq args (cons "search" args))
-    (setq args (cons "-b" (cons bugz-db-base args)))
-    (setq args (cons "-u" (cons bugz-db-user args)))
+    (when (stringp bugz-db-base)
+        (setq args (cons "-b" (cons bugz-db-base args))))
+    (when (stringp bugz-db-user)
+        (setq args (cons "-u" (cons bugz-db-user args))))
     (setq args (cons "--encoding" (cons "utf-8" args)))
     (setq args (cons "--quiet" args))
     (setq args (cons "--columns" (cons "1000" args)))
-    (let ((passwd (bugz-read-passwd)))
-      (unless (equal passwd "")
-        (setq args (cons "-p" (cons passwd args)))))
+    (when (and bugz-db-base bugz-db-user)
+        (let ((passwd (bugz-read-passwd)))
+          (unless (equal passwd "")
+            (setq args (cons "-p" (cons passwd args))))))
     ;; Call 'bugz' to perform the query.
     (unwind-protect
         (progn
