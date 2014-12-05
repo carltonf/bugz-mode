@@ -1,0 +1,10 @@
+This is a forked version of Jose E. Marchesi's =bugz-mode=.
+
+* Plan
+
+** TODO Decouple it from [[https://github.com/williamh/pybugz][pybugz]].
+
+Maybe even let Emacs interact with Bugzilla directly.
+
+* Refs
+[[http://www.emacswiki.org/emacs/BugzMode][EmacsWiki Page on Bugmode]]
