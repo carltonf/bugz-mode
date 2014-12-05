@@ -416,7 +416,7 @@ Example:
 ;;; Internal variables
 
 (defconst bugz-headers-alt
-  '("Title" "Assignee" "Reported" "Updated" "Status"
+  '("Title" "Assignee" "AssignedTo" "Reported" "Updated" "Status"
     "Severity" "Priority" "Reporter" "Product"
     "Component" "CC" "Comments" "Attachments" "Blocked"
     "DependsOn")
@@ -766,14 +766,15 @@ FORCE-DOWNLOAD is non-nil."
   "Get the list of bugs which are present in the local database."
   (let ((bug-files (directory-files bugz-db-dir t "^[0-9]+\\.bugz$"))
         bugs)
-    (mapcar
+    (mapc
      (lambda (bug-file)
        (with-temp-buffer
          (insert-file-contents bug-file)
          (let* ((headers (bugz-parse-headers))
                 (bug-id (file-name-base bug-file))
                 (bug-title (assoc "Title" headers))
-                (bug-assignee (assoc "Assignee" headers)))
+                (bug-assignee (or (assoc "Assignee" headers)
+                                  (assoc "AssignedTo" headers))))
            (unless bug-title (error (concat "Missing Title header in " bug-file)))
            (unless bug-assignee (error (concat "Missing Assignee header in " bug-file)))
            (setq bugs (cons (list bug-id (cadr bug-assignee) (cadr bug-title)) bugs)))))
