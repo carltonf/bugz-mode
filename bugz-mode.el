@@ -483,8 +483,13 @@ This function returns a list of bug lists of the form:
       (setq args (cons "--cc" (cons cc args))))
     (when (stringp commenter)
       (setq args (cons "--commenter" (cons commenter args))))
-    (when (stringp status)
+    (cond
+     ((stringp status)
       (setq args (cons "-s" (cons status args))))
+     ((listp status)
+      (cl-loop for st being the elements of status
+               if (stringp st)
+               do (setq args (cons "-s" (cons st args))))))
     (when (stringp severity)
       (if (member severity bugz-severity-levels)
           (setq args (cons "--severity" (cons severity args)))
@@ -775,11 +780,11 @@ FORCE-DOWNLOAD is non-nil."
      bug-files)
     bugs))
 
-(defun bugz-search-bugs (search-str)
+(defun bugz-search-bugs (search-args)
   "Get the list of bugs which are the result of a search in the
 server."
   (unwind-protect
-      (eval (read (concat "(bugz-prog-search " search-str ")")))))
+      (apply #'bugz-prog-search search-args)))
 
 (defun bugz-bug-filename (bug-id)
   "Return the full path for the filename corresponding to BUG-ID."
@@ -815,14 +820,20 @@ search criteria in the buffer-local variable
   (let ((buffer (get-buffer-create "*Bugz*")))
     (let ((bugs (if bugz-sum-current-search
                     (bugz-search-bugs bugz-sum-current-search)
-                    (bugz-get-local-bugs))))
+                  (bugz-get-local-bugs))))
       (set-buffer buffer)
       (let ((buffer-read-only nil))
         (delete-region (point-min) (point-max))
         (insert "These are your bugs, give them love.  Press 's' for a new search, 'l' for local bugs.\n\n")
-        (insert (concat "["
-                        (if bugz-sum-current-search
-                            bugz-sum-current-search
+        (insert (concat "Query: ["
+                        (if (listp bugz-sum-current-search)
+                            (mapconcat (lambda (elm)
+                                         (if (symbolp elm)
+                                             (symbol-name elm)
+                                           (concat (prin1-to-string elm t)
+                                                   ";")))
+                                       bugz-sum-current-search " ")
+                          (warn "bugz-sum-current-search has invalid value.")
                           "local")
                         "]"))
         (insert "\n\n")
@@ -1116,20 +1127,13 @@ Summary buffer with the result."
                     (mapcar (lambda (query) (list (car query) (cadr query)))
                             bugz-custom-queries)
                     "Select query"))
-           args args-str)
+           args)
       (if letter
           (progn
             (setq args (cadr (assoc letter (mapcar (lambda (query) (cdr query)) bugz-custom-queries))))
-            (mapcar (lambda (arg)
-                      (setq args-str (concat args-str 
-                                             (if (symbolp arg) (symbol-name arg)
-                                               (concat "\"" arg "\""))
-                                             " ")))
-                    args)
-            (setq args-str (substring args-str 0 -1)) ; remove trailing blank
             ;; Fetch the bugs from the server and add them to the bugz
             ;; summary buffer.
-            (setq bugz-sum-current-search (if (equal args-str "") nil args-str))
+            (setq bugz-sum-current-search args)
             (bugz-update-sum)
             (switch-to-buffer "*Bugz*"))
         (message "Never mind")))))
