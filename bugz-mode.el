@@ -1019,7 +1019,6 @@ Id BUG-ID, if any."
         (goto-char (match-beginning 0))
       (when (/= (point) (point-min))
         (message "Back to the beginning!")
-        (setq bugz-found-last-comment nil)
         (goto-char (point-min))
         (bugz-cmd-jump-to-next-whatever)))))
 
@@ -1053,14 +1052,6 @@ server."
     (bugz-open-bug (bugz-current-bug) :force-download t :only-fetch t)
     (revert-buffer t t)
     (goto-char current-char)))
-
-(defun bugz-cmd-toggle-unplugged ()
-  "Toggle the unplugged state of bugz-mode."
-  (interactive)
-  (bugz-set-unplugged (not bugz-unplugged))
-  (message (concat "Bugz-mode is now "
-                   (if bugz-unplugged "unplugged" "plugged")
-                   "!")))
 
 (defun bugz-cmd-fetch-all ()
   "Fetch all the bugs and attachments referenced in the current
@@ -1106,7 +1097,7 @@ Summary buffer with the result."
                        ((equal keyword ":priority")
                         (completing-read prompt bugz-priority-levels nil t))
                        ((equal keyword ":ordered-by")
-                        (completing-read prompt bugz-orderint-criterias nil t))
+                        (completing-read prompt bugz-ordering-criterias nil t))
                        (t (read-from-minibuffer prompt))))))
         (setq args (concat args keyword " \"" value "\" "))))
     (if (and letter args)
